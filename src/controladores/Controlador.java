@@ -25,6 +25,7 @@ public class Controlador {
     private GestorComprobantes gestorComprobantes;
     private GestorPagos gestorPagos;
     private GestorImpuestos gestorImpuestos;
+    private GestorUsuarios gestorUsuarios;
 
     private Controlador() {
         this.gestorProveedores  = GestorProveedores.getInstancia();
@@ -33,6 +34,7 @@ public class Controlador {
         this.gestorComprobantes = GestorComprobantes.getInstancia();
         this.gestorPagos        = GestorPagos.getInstancia();
         this.gestorImpuestos    = GestorImpuestos.getInstancia();
+        this.gestorUsuarios     = GestorUsuarios.getInstancia();
     }
 
     public static Controlador getInstancia() {
@@ -44,7 +46,6 @@ public class Controlador {
 
     // ==========================================================================
     // CASO DE USO 1 — Generar Orden de Compra
-    // Diagrama: generarOC_v2_corregido.puml
     // ==========================================================================
 
     public Proveedor buscarProveedor(String cuit) {
@@ -82,7 +83,6 @@ public class Controlador {
 
     // ==========================================================================
     // CASO DE USO 2 — Registrar Factura y validar contra OC
-    // Diagrama: RegistrarFyValidarOC_v3_corregido.puml
     // ==========================================================================
 
     public OrdenDeCompra buscarOrdenDeCompra(String numero) {
@@ -103,7 +103,6 @@ public class Controlador {
 
     // ==========================================================================
     // CASO DE USO 3 — Emitir Orden de Pago
-    // Diagrama: EmitirOP_v3_corregido.puml
     // ==========================================================================
 
     public List<Comprobante> consultarDocumentosImpagos(Proveedor proveedor) {
@@ -125,7 +124,6 @@ public class Controlador {
 
     // ==========================================================================
     // CASO DE USO 4 — Consultar Cuenta Corriente
-    // Diagrama: CCProveedor_v3_corregido.puml
     // ==========================================================================
 
     public CuentaCorriente obtenerCuentaCorriente(Proveedor proveedor) {
@@ -143,5 +141,21 @@ public class Controlador {
 
     public List<OrdenDePago> getPagosRealizados(CuentaCorriente cc) {
         return cc.getPagosRealizados();
+    }
+
+    // ==========================================================================
+    // GESTIÓN DE USUARIOS
+    // ==========================================================================
+
+    public void registrarUsuario(Usuario u) {
+        gestorUsuarios.registrarUsuario(u);
+    }
+
+    public Usuario buscarUsuario(String nombreUsuario) {
+        return gestorUsuarios.buscarUsuario(nombreUsuario);
+    }
+
+    public Usuario buscarSupervisor() {
+        return gestorUsuarios.buscarSupervisor();
     }
 }
