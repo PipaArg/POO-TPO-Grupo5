@@ -12,9 +12,10 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class VistaConsultarCC extends JFrame {
+public class PanelConsultarCC extends JPanel {
 
     private Controlador controlador;
+    private Runnable onVolver;
 
     // Componentes
     private JTextField txtCuit;
@@ -28,43 +29,57 @@ public class VistaConsultarCC extends JFrame {
     private DefaultTableModel modeloPagos;
     private JButton btnBuscar;
     private JButton btnLimpiar;
+    private JButton btnVolver;
 
-    public VistaConsultarCC() {
+    public PanelConsultarCC(Runnable onVolver) {
         this.controlador = Controlador.getInstancia();
+        this.onVolver = onVolver;
         inicializarComponentes();
     }
 
     private void inicializarComponentes() {
-        setTitle("FarmaRed - Consultar Cuenta Corriente");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // ── Panel superior — búsqueda ────────────────────────────────────
+        // ── Panel superior — título y volver ────────────────────────────
+        JPanel panelTitulo = new JPanel(new BorderLayout());
+        btnVolver = new JButton("← Volver al Menú");
+        btnVolver.setFont(new Font("Arial", Font.PLAIN, 12));
+        JLabel lblTitulo = new JLabel("Consultar Cuenta Corriente", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        panelTitulo.add(btnVolver, BorderLayout.WEST);
+        panelTitulo.add(lblTitulo, BorderLayout.CENTER);
+
+        // ── Panel búsqueda ──────────────────────────────────────────────
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         panelBusqueda.setBorder(BorderFactory.createTitledBorder("Buscar Proveedor"));
-
         panelBusqueda.add(new JLabel("CUIT:"));
         txtCuit = new JTextField(15);
+    txtCuit.addKeyListener(new java.awt.event.KeyAdapter() {
+    public void keyTyped(java.awt.event.KeyEvent e) {
+        char c = e.getKeyChar();
+        if (!Character.isDigit(c) && c != '-' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+            e.consume();
+        }
+    }
+});
         panelBusqueda.add(txtCuit);
-
         btnBuscar = new JButton("Buscar");
         panelBusqueda.add(btnBuscar);
-
         btnLimpiar = new JButton("Limpiar");
         panelBusqueda.add(btnLimpiar);
-
         lblProveedor = new JLabel("Proveedor: (no seleccionado)");
         lblProveedor.setFont(new Font("Arial", Font.BOLD, 12));
         panelBusqueda.add(lblProveedor);
 
-        add(panelBusqueda, BorderLayout.NORTH);
+        JPanel panelNorth = new JPanel(new GridLayout(2, 1));
+        panelNorth.add(panelTitulo);
+        panelNorth.add(panelBusqueda);
+        add(panelNorth, BorderLayout.NORTH);
 
-        // ── Panel central — tabs ─────────────────────────────────────────
+        // ── Tabs ────────────────────────────────────────────────────────
         JTabbedPane tabs = new JTabbedPane();
 
-        // Tab 1 — Movimientos
         String[] columnasMovimientos = {"Fecha", "Tipo", "N° Documento", "Debe", "Haber", "Saldo"};
         modeloMovimientos = new DefaultTableModel(columnasMovimientos, 0) {
             @Override
@@ -73,7 +88,6 @@ public class VistaConsultarCC extends JFrame {
         tablaMovimientos = new JTable(modeloMovimientos);
         tabs.addTab("Movimientos", new JScrollPane(tablaMovimientos));
 
-        // Tab 2 — Documentos Impagos
         String[] columnasImpagos = {"N° Comprobante", "Tipo", "Fecha Emisión", "Importe Total"};
         modeloImpagos = new DefaultTableModel(columnasImpagos, 0) {
             @Override
@@ -82,7 +96,6 @@ public class VistaConsultarCC extends JFrame {
         tablaImpagos = new JTable(modeloImpagos);
         tabs.addTab("Documentos Impagos", new JScrollPane(tablaImpagos));
 
-        // Tab 3 — Pagos Realizados
         String[] columnasPagos = {"N° Orden Pago", "Fecha", "Total Medios Pago", "Retenciones", "Importe Neto"};
         modeloPagos = new DefaultTableModel(columnasPagos, 0) {
             @Override
@@ -101,7 +114,11 @@ public class VistaConsultarCC extends JFrame {
         panelSaldo.add(lblSaldo);
         add(panelSaldo, BorderLayout.SOUTH);
 
-        // ── Eventos ──────────────────────────────────────────────────────
+        // ── Eventos ─────────────────────────────────────────────────────
+        btnVolver.addActionListener(e -> {
+            limpiarFormulario();
+            onVolver.run();
+        });
         btnBuscar.addActionListener(e -> buscarCuentaCorriente());
         btnLimpiar.addActionListener(e -> limpiarFormulario());
     }
@@ -115,7 +132,6 @@ public class VistaConsultarCC extends JFrame {
             return;
         }
 
-        // Caso de uso 4 — siguiendo CCProveedor_v3_corregido
         Proveedor proveedor = controlador.buscarProveedor(cuit);
         if (proveedor == null) {
             JOptionPane.showMessageDialog(this,
@@ -128,7 +144,6 @@ public class VistaConsultarCC extends JFrame {
                 + " | CUIT: " + proveedor.getCuit());
 
         CuentaCorriente cc = controlador.obtenerCuentaCorriente(proveedor);
-
         cargarMovimientos(cc);
         cargarDocumentosImpagos(cc);
         cargarPagosRealizados(cc);
