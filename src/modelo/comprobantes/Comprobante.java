@@ -15,6 +15,7 @@ public abstract class Comprobante {
     private double importeTotal;
     private LetraComprobante letra;
     private List<ItemComprobante> items;
+    private OrdenDePago ordenDePago;
     private Proveedor proveedor;
 
     public Comprobante(String numero, Date fechaEmision, double importeNeto,
@@ -30,8 +31,8 @@ public abstract class Comprobante {
     }
 
     public void registrarCancelacion(OrdenDePago op) {
-        // Se completa en Bloque 2
-    }
+    this.ordenDePago = op;
+}
 
     public void agregarItem(ItemComprobante item) {
         items.add(item);
@@ -50,4 +51,7 @@ public abstract class Comprobante {
     public LetraComprobante getLetra() { return letra; }
     public List<ItemComprobante> getItems() { return items; }
     public Proveedor getProveedor() { return proveedor; }
+
+    public OrdenDePago getOrdenDePago() { return ordenDePago; }
+public boolean estaCancelado() { return ordenDePago != null; }
 }

@@ -22,4 +22,6 @@ public class Usuario {
     public boolean esSupervisor() { return rol == Rol.SUPERVISOR; }
     public boolean puedeAutorizar() { return rol == Rol.SUPERVISOR || rol == Rol.ADMINISTRADOR; }
     public boolean estaActivo() { return activo; }
+    public String getEmail() { return email; }
+    public Rol getRol() { return rol; }
 }

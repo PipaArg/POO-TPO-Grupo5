@@ -86,4 +86,9 @@ public class Proveedor {
     public List<OrdenDePago> getPagosRealizados() {
         return cuentaCorriente.getPagosRealizados();
     }
+    public String getNombreFantasia() { return nombreFantasia; }
+    public CondicionIVA getCondicionIVA() { return condicionIVA; }
+public String getNumeroIngresosBrutos() { return numeroIngresosBrutos; }
+public List<Rubro> getRubros() { return rubros; }
+
 }

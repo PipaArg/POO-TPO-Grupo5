@@ -32,4 +32,5 @@ public class Producto {
     public TipoIVA getTipoIVA() { return tipoIVA; }
     public UnidadDeMedida getUnidadDeMedida() { return unidadDeMedida; }
     public List<PrecioAcordado> getHistorialPrecios() { return preciosAcordados; }
+    public Rubro getRubro() { return rubro; }
 }

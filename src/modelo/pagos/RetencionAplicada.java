@@ -9,11 +9,12 @@ public class RetencionAplicada {
     private Impuesto impuesto;
 
     public RetencionAplicada(Impuesto impuesto, double baseImponible, double porcentajeAplicado) {
-        this.impuesto = impuesto;
-        this.baseImponible = baseImponible;
-        this.porcentajeAplicado = porcentajeAplicado;
-        this.montoRetenido = baseImponible * porcentajeAplicado / 100;
-    }
+    this.impuesto = impuesto;
+    this.baseImponible = baseImponible;
+    this.porcentajeAplicado = porcentajeAplicado;
+    // Delegamos el cálculo al método inteligente de Impuesto
+    this.montoRetenido = impuesto.calcularRetencion(baseImponible);
+}
 
     public double getMontoRetenido() { return montoRetenido; }
     public Impuesto getImpuesto() { return impuesto; }
